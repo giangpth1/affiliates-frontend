@@ -35,6 +35,13 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress --no-dev --optimize-autoloader
 
+      - name: Verify CSS/JS files exist
+        run: |
+          echo "=== Checking public/css and public/js ==="
+          ls -la public/css/ || echo "public/css NOT FOUND!"
+          ls -la public/js/ || echo "public/js NOT FOUND!"
+          cat public/css/app.css | head -20 || echo "app.css NOT FOUND!"
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
