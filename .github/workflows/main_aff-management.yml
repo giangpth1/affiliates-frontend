@@ -23,16 +23,6 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install npm dependencies and build assets
-        run: |
-          npm install
-          npm run build
-
       - name: Check if composer.json exists
         id: check_files
         uses: andstor/file-existence-action@v1
@@ -41,7 +31,8 @@ jobs:
 
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress --no-dev --optimize-autoloader
+        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -65,9 +56,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8689355B69AE437FAC6FADEDB7DD07D7 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B0A47ECAE5594D2BADEA657FDACCD1A6 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_393162DA0C574032A3EBD0D88F84DA72 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0C690C13B0B4466FB312FD44165A5353 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_29BCD66EC33F44BC803B92DF445E1B13 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CA4D94BCED3A4C5C94CF1616195028C6 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
