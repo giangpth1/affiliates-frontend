@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\LinkController;
-use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     return redirect()->route('products.index');
@@ -28,5 +27,4 @@ Route::middleware('auth.api')->group(function () {
     Route::post('/links', [LinkController::class, 'store'])->name('links.store');
     Route::get('/links/{id}/status', [LinkController::class, 'status'])->name('links.status');
 
-    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 });

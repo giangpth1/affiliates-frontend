@@ -152,12 +152,13 @@ class ApiService
         return $this->handleResponse($response);
     }
 
-    public function createLink(string $url): array
+    public function createLink(string $url, string $userId): array
     {
-        $response = $this->request()->post('/links/', ['url' => $url]);
+        $payload = ['url' => $url, 'user_id' => $userId];
+        $response = $this->request()->post('/links/', $payload);
 
         if ($response->status() === 401 && $this->handleUnauthorized()) {
-            $response = $this->request()->post('/links/', ['url' => $url]);
+            $response = $this->request()->post('/links/', $payload);
         }
 
         return $this->handleResponse($response);
@@ -166,6 +167,10 @@ class ApiService
     public function getLink(string $id): array
     {
         $response = $this->request()->get("/links/{$id}/");
+
+        if ($response->status() === 401 && $this->handleUnauthorized()) {
+            $response = $this->request()->get("/links/{$id}/");
+        }
 
         return $this->handleResponse($response);
     }

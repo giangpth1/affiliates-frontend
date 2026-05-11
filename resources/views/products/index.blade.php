@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Sản phẩm')
+@section('title', 'Link affiliate')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h4 class="mb-1">Sản phẩm</h4>
+        <h4 class="mb-1">Link affiliate</h4>
         <p class="text-muted mb-0">
-            {{ $total }} sản phẩm
+            {{ $total }} link
             @if($pendingCount > 0)
                 <span class="text-warning ms-2">
-                    <i class="bi bi-hourglass-split"></i> Đang xử lý {{ $pendingCount }} sản phẩm
+                    <i class="bi bi-hourglass-split"></i> Đang xử lý {{ $pendingCount }} link
                 </span>
             @endif
         </p>
@@ -19,6 +19,26 @@
         <i class="bi bi-plus-lg me-1"></i>Thêm link
     </a>
 </div>
+
+<form method="GET" action="{{ route('products.index') }}" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control"
+               placeholder="Tìm kiếm link affiliate..."
+               value="{{ $query ?? '' }}">
+        <button class="btn btn-outline-secondary" type="submit">
+            <i class="bi bi-search"></i>
+        </button>
+        @if(!empty($query))
+            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary" title="Xóa tìm kiếm">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        @endif
+    </div>
+</form>
+
+@if(!empty($query))
+    <p class="text-muted small mb-3">Kết quả tìm kiếm cho "<strong>{{ $query }}</strong>" — {{ $total }} link</p>
+@endif
 
 @if(count($products) > 0)
     <div class="card">
@@ -52,13 +72,13 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div>
-                                        <div class="fw-medium">{{ $product['title'] }}</div>
-                                        <small class="text-muted">
+                                        <div class="fw-medium" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ $product['title'] }}</div>
+                                        <small class="text-muted d-block" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">
                                             <i class="bi bi-shop me-1"></i>
                                             @if(!empty($product['shop_name']))
                                                 {{ $product['shop_name'] }}
                                             @else
-                                                Shop ID: {{ $product['shop_id'] }}
+                                                Shop ID: {{ $product['shop_id'] ?? '' }}
                                             @endif
                                         </small>
                                     </div>
@@ -104,11 +124,15 @@
                             
                             <!-- Desktop: Show date -->
                             <td class="d-none d-md-table-cell">
-                                <small class="text-muted">
-                                    {{ \Carbon\Carbon::parse($product['created_at'])->format('d/m/Y') }}
-                                    <br>
-                                    {{ \Carbon\Carbon::parse($product['created_at'])->format('H:i') }}
-                                </small>
+                                @if(!empty($product['created_at']))
+                                    <small class="text-muted">
+                                        {{ \Carbon\Carbon::parse($product['created_at'])->format('d/m/Y') }}
+                                        <br>
+                                        {{ \Carbon\Carbon::parse($product['created_at'])->format('H:i') }}
+                                    </small>
+                                @else
+                                    <small class="text-muted">—</small>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -202,9 +226,9 @@
 @else
     <div class="card text-center py-5">
         <div class="card-body">
-            <i class="bi bi-box-seam display-1 text-muted mb-3"></i>
-            <h5>Chưa có sản phẩm</h5>
-            <p class="text-muted mb-4">Thêm link Shopee để bắt đầu quản lý sản phẩm</p>
+            <i class="bi bi-link-45deg display-1 text-muted mb-3"></i>
+            <h5>Chưa có link affiliate</h5>
+            <p class="text-muted mb-4">Thêm link Shopee để bắt đầu quản lý link affiliate</p>
             <a href="{{ route('links.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-1"></i>Thêm link đầu tiên
             </a>

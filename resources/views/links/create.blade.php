@@ -45,16 +45,20 @@
     </div>
 </div>
 
-<!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body text-center py-4">
-                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                <h5 class="mt-3 mb-2">Đã thêm link!</h5>
-                <p class="text-muted mb-4">Sản phẩm đang được xử lý, bạn có thể thêm link khác</p>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+<!-- Toast -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle me-2"></i>Đã thêm link, sản phẩm đang được xử lý
             </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+    <div id="errorToast" class="toast align-items-center text-bg-danger border-0 mt-2" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="errorToastMsg">Có lỗi xảy ra</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     </div>
 </div>
@@ -67,28 +71,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitText = document.getElementById('submit-text');
     const submitLoading = document.getElementById('submit-loading');
     const urlError = document.getElementById('url-error');
-    
-    // Check if Bootstrap is loaded
-    if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap not loaded!');
-        return;
-    }
-    
-    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    const successToast = new bootstrap.Toast(document.getElementById('successToast'), { delay: 4000 });
+    const errorToast = new bootstrap.Toast(document.getElementById('errorToast'), { delay: 4000 });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        console.log('Form submitted via AJAX');
-        
+
         const url = urlInput.value.trim();
         if (!url) return;
-        
-        // Disable submit button
+
         submitBtn.disabled = true;
         submitText.style.display = 'none';
         submitLoading.style.display = 'inline-block';
         urlError.style.display = 'none';
-        
+
         try {
             const response = await fetch('{{ route('links.store') }}', {
                 method: 'POST',
@@ -99,28 +95,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ url: url })
             });
-            
-            console.log('Response status:', response.status);
+
             const data = await response.json();
-            console.log('Response data:', data);
-            
+
             if (response.ok) {
-                // Show success modal
-                successModal.show();
-                // Reset form
                 urlInput.value = '';
-                urlError.style.display = 'none';
+                successToast.show();
             } else {
-                // Show error
-                urlError.textContent = data.error || 'Có lỗi xảy ra';
-                urlError.style.display = 'block';
+                document.getElementById('errorToastMsg').textContent = data.error || 'Có lỗi xảy ra';
+                errorToast.show();
             }
         } catch (error) {
-            console.error('Fetch error:', error);
-            urlError.textContent = 'Không thể kết nối với server';
-            urlError.style.display = 'block';
+            document.getElementById('errorToastMsg').textContent = 'Không thể kết nối với server';
+            errorToast.show();
         } finally {
-            // Re-enable submit button
             submitBtn.disabled = false;
             submitText.style.display = 'inline';
             submitLoading.style.display = 'none';

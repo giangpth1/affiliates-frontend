@@ -8,6 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none; }
+        input[type="password"]::-webkit-credentials-auto-fill-button { display: none; }
+    </style>
 </head>
 <body class="bg-light">
     <div class="min-vh-100 d-flex align-items-center justify-content-center p-4">

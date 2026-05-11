@@ -22,7 +22,8 @@ class LinkController extends Controller
             'url' => 'required|url',
         ]);
 
-        $result = $this->api->createLink($request->input('url'));
+        $userId = session('user.id', 'default');
+        $result = $this->api->createLink($request->input('url'), $userId);
 
         if ($result['success']) {
             // Return JSON for AJAX requests

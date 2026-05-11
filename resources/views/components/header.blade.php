@@ -5,7 +5,7 @@
                  style="width: 32px; height: 32px; background: var(--color-primary);">
                 <i class="bi bi-bag-fill text-white"></i>
             </div>
-            <span class="fw-bold text-dark">Shopee Aff</span>
+            <span class="fw-bold text-dark">Shopee Affiliate</span>
         </a>
 
         <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
@@ -23,17 +23,12 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                    <i class="bi bi-box-seam me-2"></i>Sản phẩm
+                    <i class="bi bi-link-45deg me-2"></i>Link affiliate
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('links.create') }}" class="nav-link {{ request()->routeIs('links.*') ? 'active' : '' }}">
-                    <i class="bi bi-link-45deg me-2"></i>Thêm link
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('search.index') }}" class="nav-link {{ request()->routeIs('search.*') ? 'active' : '' }}">
-                    <i class="bi bi-search me-2"></i>Tìm kiếm
+                    <i class="bi bi-plus-circle me-2"></i>Thêm link
                 </a>
             </li>
         </ul>

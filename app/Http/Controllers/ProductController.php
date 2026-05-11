@@ -13,6 +13,29 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
+        $query = trim($request->input('q', ''));
+
+        if (strlen($query) > 0) {
+            $filters = array_filter([
+                'min_price' => $request->input('min_price'),
+                'max_price' => $request->input('max_price'),
+            ]);
+            $result = $this->api->search($query, $filters);
+
+            if (!$result['success']) {
+                return back()->with('error', $result['error']);
+            }
+
+            return view('products.index', [
+                'products'    => $result['data']['results'] ?? [],
+                'total'       => $result['data']['count'] ?? 0,
+                'page'        => 1,
+                'totalPages'  => 1,
+                'pendingCount' => 0,
+                'query'       => $query,
+            ]);
+        }
+
         $page = $request->input('page', 1);
         $result = $this->api->getProducts($page);
 
@@ -20,7 +43,6 @@ class ProductController extends Controller
             return back()->with('error', $result['error']);
         }
 
-        // Get pending links count
         $pendingCount = 0;
         $linksResult = $this->api->getLinks();
         if ($linksResult['success']) {
@@ -30,11 +52,12 @@ class ProductController extends Controller
         }
 
         return view('products.index', [
-            'products' => $result['data']['results'],
-            'total' => $result['data']['count'],
-            'page' => $page,
-            'totalPages' => ceil($result['data']['count'] / 20),
+            'products'    => $result['data']['results'],
+            'total'       => $result['data']['count'],
+            'page'        => $page,
+            'totalPages'  => ceil($result['data']['count'] / 20),
             'pendingCount' => $pendingCount,
+            'query'       => '',
         ]);
     }
 
