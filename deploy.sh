@@ -20,15 +20,14 @@ php composer.phar install --no-dev --optimize-autoloader --no-interaction
 
 # 3. Set proper permissions
 echo "Setting permissions..."
-chmod -R 755 storage bootstrap/cache
+chmod -R 755 storage bootstrap/cache 2>/dev/null || true
 
-# 4. Clear and cache config (optional - only if .env is set)
-if [ -f .env ]; then
-    echo "Caching configuration..."
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-fi
+# 4. Clear Laravel caches (important for Vite manifest)
+echo "Clearing Laravel caches..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
 
 # 5. Run migrations (if needed)
 # Uncomment if using database
