@@ -31,14 +31,61 @@ jobs:
 
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
+        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress --no-dev --optimize-autoloader
 
+      - name: Prepare Laravel for Azure (flatten public folder)
+        run: |
+          echo "Flattening public/ folder for Azure deployment..."
+          
+          # Create temp deploy directory
+          mkdir -p deploy-temp
+          
+          # Copy all files except public/ to temp
+          rsync -av --exclude='public' --exclude='deploy-temp' --exclude='node_modules' --exclude='tests' --exclude='.git' ./ deploy-temp/
+          
+          # Move public/ contents to root of temp
+          rsync -av public/ deploy-temp/
+          
+          # Update index.php paths for root deployment
+          sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" deploy-temp/index.php
+          sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" deploy-temp/index.php
+          
+          # Create web.config for Azure IIS
+          cat > deploy-temp/web.config << 'WEBCONFIG'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <rewrite>
+                <rules>
+                  <rule name="Laravel Routes" stopProcessing="true">
+                    <match url="^(.*)$" ignoreCase="false" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="index.php" appendQueryString="true" />
+                  </rule>
+                </rules>
+              </rewrite>
+              <defaultDocument>
+                <files>
+                  <clear />
+                  <add value="index.php" />
+                </files>
+              </defaultDocument>
+              <directoryBrowse enabled="false" />
+            </system.webServer>
+          </configuration>
+          WEBCONFIG
+          
+          echo "Deployment structure prepared!"
+          ls -la deploy-temp/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: .
+          path: deploy-temp
 
   deploy:
     runs-on: ubuntu-latest
