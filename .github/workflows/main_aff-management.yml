@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare Laravel for Azure (flatten public folder)
         run: |
-          echo "Flattening public/ folder for Azure deployment..."
+          echo "Preparing Laravel for Azure Linux App Service with Nginx..."
           
           # Create temp deploy directory
           mkdir -p deploy-temp
@@ -50,33 +50,53 @@ jobs:
           sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" deploy-temp/index.php
           sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" deploy-temp/index.php
           
-          # Create web.config for Azure IIS
-          cat > deploy-temp/web.config << 'WEBCONFIG'
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <system.webServer>
-              <rewrite>
-                <rules>
-                  <rule name="Laravel Routes" stopProcessing="true">
-                    <match url="^(.*)$" ignoreCase="false" />
-                    <conditions logicalGrouping="MatchAll">
-                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
-                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
-                    </conditions>
-                    <action type="Rewrite" url="index.php" appendQueryString="true" />
-                  </rule>
-                </rules>
-              </rewrite>
-              <defaultDocument>
-                <files>
-                  <clear />
-                  <add value="index.php" />
-                </files>
-              </defaultDocument>
-              <directoryBrowse enabled="false" />
-            </system.webServer>
-          </configuration>
-          WEBCONFIG
+          # Create nginx default.conf for Laravel
+          mkdir -p deploy-temp/nginx
+          cat > deploy-temp/nginx/default.conf << 'NGINXCONF'
+          server {
+              listen 8080;
+              listen [::]:8080;
+              root /home/site/wwwroot;
+              index index.php index.html;
+              server_name _;
+              
+              location / {
+                  try_files $uri $uri/ /index.php?$query_string;
+              }
+              
+              location ~ \.php$ {
+                  include fastcgi_params;
+                  fastcgi_pass 127.0.0.1:9000;
+                  fastcgi_index index.php;
+                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              }
+              
+              location ~ /\.(?!well-known).* {
+                  deny all;
+              }
+          }
+          NGINXCONF
+          
+          # Create startup script
+          cat > deploy-temp/startup.sh << 'STARTUP'
+          #!/bin/sh
+          echo "Starting Laravel application..."
+          
+          # Copy nginx config
+          cp /home/site/wwwroot/nginx/default.conf /etc/nginx/sites-available/default
+          
+          # Set permissions
+          chmod -R 755 /home/site/wwwroot/storage
+          chmod -R 755 /home/site/wwwroot/bootstrap/cache
+          
+          # Start nginx and PHP-FPM
+          service nginx restart
+          php-fpm
+          STARTUP
+          chmod +x deploy-temp/startup.sh
+          
+          echo "Deployment structure prepared!"
+          ls -la deploy-temp/
           
           echo "Deployment structure prepared!"
           ls -la deploy-temp/

@@ -101,7 +101,7 @@ Go to: **Web App → Configuration → Application Settings**
 
 Add these:
 ```
-APP_NAME=Shopee Aff Manager
+APP_NAME=Shopee Affiliate Manager
 APP_ENV=production
 APP_KEY=base64:YOUR_KEY_HERE
 APP_DEBUG=false
