@@ -40,9 +40,9 @@ Thumbs.db
 /storage/logs/*
 !/storage/logs/.gitkeep
 
-# Compiled assets
-/public/css
-/public/js
+# Compiled assets (keep Vite builds for deployment)
+# /public/css
+# /public/js
 /public/mix-manifest.json
 
 # Package manager
