@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare Laravel for Azure (flatten public folder)
         run: |
-          echo "Preparing Laravel for Azure Linux App Service with Nginx..."
+          echo "Preparing Laravel for Azure Linux App Service..."
           
           # Create temp deploy directory
           mkdir -p deploy-temp
@@ -50,53 +50,8 @@ jobs:
           sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" deploy-temp/index.php
           sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" deploy-temp/index.php
           
-          # Create nginx default.conf for Laravel
-          mkdir -p deploy-temp/nginx
-          cat > deploy-temp/nginx/default.conf << 'NGINXCONF'
-          server {
-              listen 8080;
-              listen [::]:8080;
-              root /home/site/wwwroot;
-              index index.php index.html;
-              server_name _;
-              
-              location / {
-                  try_files $uri $uri/ /index.php?$query_string;
-              }
-              
-              location ~ \.php$ {
-                  include fastcgi_params;
-                  fastcgi_pass 127.0.0.1:9000;
-                  fastcgi_index index.php;
-                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-              }
-              
-              location ~ /\.(?!well-known).* {
-                  deny all;
-              }
-          }
-          NGINXCONF
-          
-          # Create startup script
-          cat > deploy-temp/startup.sh << 'STARTUP'
-          #!/bin/sh
-          echo "Starting Laravel application..."
-          
-          # Copy nginx config
-          cp /home/site/wwwroot/nginx/default.conf /etc/nginx/sites-available/default
-          
-          # Set permissions
-          chmod -R 755 /home/site/wwwroot/storage
-          chmod -R 755 /home/site/wwwroot/bootstrap/cache
-          
-          # Start nginx and PHP-FPM
-          service nginx restart
-          php-fpm
-          STARTUP
-          chmod +x deploy-temp/startup.sh
-          
           echo "Deployment structure prepared!"
-          ls -la deploy-temp/
+          ls -la deploy-temp/ | head -20
           
           echo "Deployment structure prepared!"
           ls -la deploy-temp/
