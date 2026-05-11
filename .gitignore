@@ -41,7 +41,8 @@ Thumbs.db
 !/storage/logs/.gitkeep
 
 # Compiled assets (Vite builds to public/build)
-/public/build
+# Temporarily commit build output for deployment debugging
+# /public/build
 /public/css
 /public/js
 /public/mix-manifest.json
