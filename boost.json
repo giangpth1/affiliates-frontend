@@ -1,0 +1,9 @@
+{
+    "agents": [
+        "copilot"
+    ],
+    "cloud": false,
+    "skills": [
+        "laravel-best-practices"
+    ]
+}
