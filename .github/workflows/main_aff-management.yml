@@ -23,16 +23,7 @@ jobs:
         with:
           php-version: '8.4'
 
-      # Assets are pre-built and committed to repo - no need to build in CI
-      # This ensures consistent file hashes between local and production
-
-      - name: Verify build assets exist
-        run: |
-          echo "=== Checking public/build directory ==="
-          ls -la public/build/ || echo "public/build NOT FOUND!"
-          ls -la public/build/assets/ || echo "public/build/assets NOT FOUND!"
-          echo "=== Manifest content ==="
-          cat public/build/manifest.json || echo "manifest.json NOT FOUND!"
+      # Using plain CSS/JS files in public/ - no build needed
 
       - name: Check if composer.json exists
         id: check_files
