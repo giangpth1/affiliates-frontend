@@ -22,9 +22,7 @@ class ProductController extends Controller
             ]);
             $result = $this->api->search($query, $filters);
 
-            if (!$result['success']) {
-                return back()->with('error', $result['error']);
-            }
+            $searchError = $result['success'] ? null : ($result['error'] ?? 'Lỗi tìm kiếm');
 
             return view('products.index', [
                 'products'    => $result['data']['results'] ?? [],
@@ -33,6 +31,7 @@ class ProductController extends Controller
                 'totalPages'  => 1,
                 'pendingCount' => 0,
                 'query'       => $query,
+                'searchError' => $searchError,
             ]);
         }
 

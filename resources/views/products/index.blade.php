@@ -36,7 +36,11 @@
     </div>
 </form>
 
-@if(!empty($query))
+@if(!empty($searchError ?? null))
+    <div class="alert alert-danger py-2 small mb-3">
+        <i class="bi bi-exclamation-triangle me-1"></i> Lỗi tìm kiếm: {{ $searchError }}
+    </div>
+@elseif(!empty($query))
     <p class="text-muted small mb-3">Kết quả tìm kiếm cho "<strong>{{ $query }}</strong>" — {{ $total }} link</p>
 @endif
 
