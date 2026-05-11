@@ -23,15 +23,8 @@ jobs:
         with:
           php-version: '8.4'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install npm dependencies and build assets
-        run: |
-          npm install
-          npm run build
+      # Assets are pre-built and committed to repo - no need to build in CI
+      # This ensures consistent file hashes between local and production
 
       - name: Check if composer.json exists
         id: check_files
