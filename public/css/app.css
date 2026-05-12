@@ -33,6 +33,12 @@
 
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
   --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  
+  /* PWA Safe Area (iOS Notch/Status Bar) */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -41,6 +47,9 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--color-bg);
   color: var(--color-text-primary);
+  /* Support iOS safe area */
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
 }
 
 .btn-primary {
@@ -96,6 +105,33 @@ body {
 
 .sidebar .nav-link:hover {
   background-color: var(--color-bg);
+}
+
+/* PWA Mobile Header - Safe Area Support */
+header.sticky-top {
+  /* Add padding for iOS notch/status bar */
+  padding-top: var(--safe-area-top);
+  background-color: var(--color-surface) !important;
+}
+
+header.sticky-top .d-flex {
+  /* Ensure content has proper spacing below status bar */
+  padding-top: 0.5rem;
+}
+
+/* Mobile Bottom Navigation (if added later) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-nav-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  }
+}
+
+/* Fix content below sticky header */
+@media (max-width: 991.98px) {
+  main {
+    /* Account for header + safe area */
+    padding-top: calc(var(--safe-area-top) + 0.5rem);
+  }
 }
 
 .sidebar .nav-link.active {
