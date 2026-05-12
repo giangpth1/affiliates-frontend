@@ -1,0 +1,36 @@
+# ⚠️ PLACEHOLDER ICONS - REPLACE WITH REAL ICONS
+
+These are temporary placeholder icons generated from SVG.
+
+## TODO: Generate Real Icons
+
+### Option 1: Quick Online Tool (5 minutes)
+1. Go to: https://www.pwabuilder.com/imageGenerator
+2. Upload a 512x512 PNG logo
+3. Download generated icons
+4. Replace all files in this folder
+
+### Option 2: Use ImageMagick (Local)
+Run this PowerShell script from this directory:
+
+```powershell
+# Requires ImageMagick: choco install imagemagick
+
+$sizes = @(16, 32, 72, 96, 128, 144, 152, 192, 384, 512)
+foreach ($size in $sizes) {
+    magick convert icon.svg -resize "${size}x${size}" "icon-${size}x${size}.png"
+    Write-Host "✅ icon-${size}x${size}.png"
+}
+```
+
+### Option 3: Manual (Figma/Photoshop)
+1. Design logo 512x512px
+2. Export as PNG for each size
+3. Save with naming: `icon-{size}x{size}.png`
+
+## Current Status
+- ✅ SVG template created
+- ❌ PNG icons not generated yet
+- ⚠️ PWA will work but icons may not display correctly
+
+Generate real icons for production!
